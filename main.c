@@ -6,7 +6,7 @@
 
 #include IMPL
 
-#ifdef OPT
+#if defined(OPT)
 #define OUT_FILE "opt.txt"
 #else
 #define OUT_FILE "orig.txt"
@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
+
+#if defined(OPT)
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
             i++;
@@ -60,6 +62,16 @@ int main(int argc, char *argv[])
         i = 0;
         e = append(line, e);
     }
+#else
+    while (fgets(line, sizeof(line), fp)) {
+        while (line[i] != '\0')
+            i++;
+        line[i - 1] = '\0';
+        i = 0;
+        e = append(line, e);
+    }
+#endif
+
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
 
