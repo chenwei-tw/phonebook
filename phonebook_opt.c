@@ -4,23 +4,57 @@
 #include "phonebook_opt.h"
 
 /* FILL YOUR OWN IMPLEMENTATION HERE! */
-entry *findName(char lastName[], entry *pHead)
+entry *findName(char lastName[], entry *table)
 {
-    while (pHead != NULL) {
-        if (strcasecmp(lastName, pHead->lastName) == 0)
-            return pHead;
-        pHead = pHead->pNext;
+    int key = hash_function(lastName);
+    entry *current = &table[key];
+
+    while (current != NULL) {
+        if (strcasecmp(lastName, current->lastName) == 0)
+            return current;
+        current = current->pNext;
     }
     return NULL;
 }
 
-entry *append(char lastName[], entry *e)
+void append(char lastName[], entry *table)
 {
-    /* allocate memory for the new entry and put lastName */
-    e->pNext = (entry *) malloc(sizeof(entry));
-    e = e->pNext;
-    strcpy(e->lastName, lastName);
-    e->pNext = NULL;
+    /* allocate memory for the new entry and put lastName
+     * into the right location */
+    int key = hash_function(lastName);
 
-    return e;
+    if(table[key].lastName[0] == '\0')
+        strcpy(table[key].lastName, lastName);
+    else {
+        entry *tmp = table[key].pNext;
+        table[key].pNext = (entry *) malloc(sizeof(entry));
+        strcpy(table[key].pNext->lastName, lastName);
+        table[key].pNext->pDetail = NULL;
+        table[key].pNext->pNext = tmp;
+    }
+}
+
+int init_hash(entry** table, int size)
+{
+    if(NULL == (*table = (entry *) malloc(sizeof(entry) * size))) return -1;
+
+    for(int i = 0; i < size; i++) {
+        (*table)[i].lastName[0] = '\0';
+        (*table)[i].pDetail = NULL;
+        (*table)[i].pNext = NULL;
+    }
+
+    return 1;
+}
+
+int hash_function(char* str)
+{
+    int value = 0;
+
+    while(*str)
+        value += *str++;
+
+    value %= HASH_TABLE_SIZE;
+
+    return value;
 }
