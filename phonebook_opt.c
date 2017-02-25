@@ -19,7 +19,7 @@ entry *findName(char lastName[], hitem *table)
     return NULL;
 }
 
-void append(char lastName[], int str, hitem *table, pool *p)
+void append(char lastName[], int str, hitem *table, pool **p)
 {
     int key = str % HASH_TABLE_SIZE;
 
@@ -27,7 +27,7 @@ void append(char lastName[], int str, hitem *table, pool *p)
         strcpy(table[key].hNext->slot[1].lastName, lastName);
     } else {
         hitem *tmp = table[key].hNext;
-        table[key].hNext = (hitem *) cmalloc(p, sizeof(hitem));
+        table[key].hNext = (hitem *) cmalloc(p[key], sizeof(hitem));
         strcpy(table[key].hNext->slot[0].lastName, lastName);
         table[key].hNext->slot[0].pDetail = NULL;
         table[key].hNext->slot[1].pDetail = NULL;
@@ -36,9 +36,9 @@ void append(char lastName[], int str, hitem *table, pool *p)
     }
 }
 
-int init_hash(hitem **table, int size, pool *p)
+int init_hash(hitem **table, int size)
 {
-    if (NULL == (*table = (hitem *) cmalloc(p, sizeof(hitem) * size))) return -1;
+    if (NULL == (*table = (hitem *) malloc(sizeof(hitem) * size))) return -1;
 
     for (int i = 0; i < size; i++)
         (*table)[i].hNext = NULL;

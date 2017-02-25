@@ -44,11 +44,13 @@ int main(int argc, char *argv[])
     }
 
 #if defined(OPT)
-    pool *memory_pool = NULL;
-    memory_pool = pool_init(sizeof(hitem) * ((DICT_SIZE>>1) + (HASH_TABLE_SIZE<<1)));
+    pool *memory_pool[HASH_TABLE_SIZE];
+    for(int i = 0; i < HASH_TABLE_SIZE; i++)
+        memory_pool[i] = pool_init(500 * sizeof(hitem));
+
     hitem *e = NULL;
 
-    if (init_hash(&e, HASH_TABLE_SIZE, memory_pool) == -1) {
+    if (init_hash(&e, HASH_TABLE_SIZE) == -1) {
         printf("cannot malloc enough space for hash table\n");
         fclose(fp);
         return -1;
@@ -65,8 +67,15 @@ int main(int argc, char *argv[])
 #if defined(__GNUC__) && !defined(OPT)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #elif defined(__GNUC__) && defined(OPT)
-    __builtin___clear_cache((char *) memory_pool->end - memory_pool->size, (char *) memory_pool->end);
+    for (int i=0; i < HASH_TABLE_SIZE; i++) {
+        plist *current = memory_pool[i]->mlist;
+        while(current) {
+            __builtin___clear_cache((char *) current->start, (char *) current->start + memory_pool[i]->size);
+            current = current->link;
+        }
+    }
 #endif
+
     clock_gettime(CLOCK_REALTIME, &start);
 
 #if defined(OPT)
@@ -111,7 +120,13 @@ int main(int argc, char *argv[])
 #if defined(__GNUC__) && !defined(OPT)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #elif defined(__GNUC__) && defined(OPT)
-    __builtin___clear_cache((char *) memory_pool->end - memory_pool->size, (char *) memory_pool->end);
+    for (int i=0; i < HASH_TABLE_SIZE; i++) {
+        plist *current = memory_pool[i]->mlist;
+        while(current) {
+            __builtin___clear_cache((char *) current->start, (char *) current->start + memory_pool[i]->size);
+            current = current->link;
+        }
+    }
 #endif
 
     /* compute the execution time */

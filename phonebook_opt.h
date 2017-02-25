@@ -30,9 +30,9 @@ typedef struct __HASH_ITEM {
     struct __HASH_ITEM *hNext;
 } hitem;
 
-int init_hash(hitem **table, int size, pool *p);
+int init_hash(hitem **table, int size);
 int hash_function(char *str);
 entry *findName(char lastName[], hitem *table);
-void append(char lastName[], int str, hitem *table, pool *p);
+void append(char lastName[], int str, hitem *table, pool **p);
 
 #endif
