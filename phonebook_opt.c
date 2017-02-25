@@ -19,7 +19,7 @@ entry *findName(char lastName[], hitem *table)
     return NULL;
 }
 
-void append(char lastName[], int str, hitem *table, pool **p)
+void append(char lastName[], unsigned int str, hitem *table, pool **p)
 {
     int key = str % HASH_TABLE_SIZE;
 
@@ -48,10 +48,12 @@ int init_hash(hitem **table, int size)
 
 int hash_function(char *str)
 {
-    int value = 0;
+    unsigned int value = 0;
 
     while (*str)
-        value += *str++;
+        value = (value << 5) - value + *str++;
 
-    return value %= HASH_TABLE_SIZE;
+    value = (value << 5 ) - value + '\n';
+
+    return value % HASH_TABLE_SIZE;
 }

@@ -9,7 +9,6 @@ pool *pool_init(size_t size)
     p->next = (char *) &p[1];
     p->end = p->next + size;
     p->size = size;
-    p->count = 1;
     p->mlist = (plist *) malloc(sizeof(plist));
     p->mlist->start = p->next;
     p->mlist->link = NULL;
@@ -38,7 +37,6 @@ void pool_allocate(pool *p)
     current->link->link = NULL;
     p->next = current->link->start = (char *) malloc(p->size);
     p->end = p->next + p->size;
-    p->count++;
 }
 
 void *cmalloc(pool *p, size_t size)

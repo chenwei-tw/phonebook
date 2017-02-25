@@ -2,7 +2,7 @@
 #define _PHONEBOOK_H
 
 #define MAX_LAST_NAME_SIZE 16
-#define HASH_TABLE_SIZE 1031
+#define HASH_TABLE_SIZE 2737
 
 #include "cmalloc.h"
 
@@ -33,6 +33,6 @@ typedef struct __HASH_ITEM {
 int init_hash(hitem **table, int size);
 int hash_function(char *str);
 entry *findName(char lastName[], hitem *table);
-void append(char lastName[], int str, hitem *table, pool **p);
+void append(char lastName[], unsigned int str, hitem *table, pool **p);
 
 #endif

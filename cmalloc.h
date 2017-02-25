@@ -10,7 +10,6 @@ typedef struct __POOL {
     char *next;
     char *end;
     size_t size;
-    int count;
     struct __POOL_LIST *mlist;
 } pool;
 

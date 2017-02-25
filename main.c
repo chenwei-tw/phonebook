@@ -36,6 +36,10 @@ int main(int argc, char *argv[])
     struct timespec start, end;
     double cpu_time1, cpu_time2;
 
+#if defined(OPT)
+    int hash_count[HASH_TABLE_SIZE] = {0};
+#endif
+
     /* check file opening */
     fp = fopen(DICT_FILE, "r");
     if (fp == NULL) {
@@ -46,7 +50,7 @@ int main(int argc, char *argv[])
 #if defined(OPT)
     pool *memory_pool[HASH_TABLE_SIZE];
     for(int i = 0; i < HASH_TABLE_SIZE; i++)
-        memory_pool[i] = pool_init(500 * sizeof(hitem));
+        memory_pool[i] = pool_init(15 * sizeof(hitem));
 
     hitem *e = NULL;
 
@@ -80,15 +84,16 @@ int main(int argc, char *argv[])
 
 #if defined(OPT)
     while (fgets(line, sizeof(line), fp)) {
-        int hash_value = 0;
+        unsigned int hash_value = 0;
         while (line[i] != '\0') {
-            hash_value += line[i];
+            hash_value = (hash_value << 5) - hash_value + line[i];
             i++;
         }
         line[i - 1] = '\0';
         i = 0;
         /* (int) '\n' = 10 */
-        append(line, hash_value - 10, e, memory_pool);
+        hash_count[hash_value % HASH_TABLE_SIZE]++;
+        append(line, hash_value , e, memory_pool);
     }
 #else
     while (fgets(line, sizeof(line), fp)) {
@@ -141,6 +146,13 @@ int main(int argc, char *argv[])
 
     printf("execution time of append() : %lf sec\n", cpu_time1);
     printf("execution time of findName() : %lf sec\n", cpu_time2);
+
+#if defined(OPT)
+    FILE *hash_output = fopen("hash_output.txt", "a");
+    for(int i=0; i<HASH_TABLE_SIZE; i++)
+        fprintf(hash_output, "%d %d\n", i, hash_count[i]);
+    fclose(hash_output);
+#endif
 
 #if !defined(OPT)
     if (pHead->pNext) free(pHead->pNext);

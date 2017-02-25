@@ -40,8 +40,15 @@ cache-test: $(EXEC)
 output.txt: cache-test calculate
 	./calculate
 
+hash_output.txt: phonebook_opt
+	make clean
+	./phonebook_opt
+
 plot: output.txt
 	gnuplot scripts/runtime.gp
+
+hash: hash_output.txt
+	gnuplot scripts/hashDistribution.gp
 
 calculate: calculate.c
 	$(CC) $(CFLAGS_common) $^ -o $@
@@ -49,4 +56,4 @@ calculate: calculate.c
 .PHONY: clean
 clean:
 	$(RM) $(EXEC) *.o perf.* \
-	      	calculate orig.txt opt.txt output.txt *.png
+	      	calculate *.txt *.png
