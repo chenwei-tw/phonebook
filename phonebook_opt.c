@@ -17,7 +17,7 @@ entry *findName(char lastName[], entry *table)
     return NULL;
 }
 
-void append(char lastName[], int str, entry *table)
+void append(char lastName[], int str, entry *table, pool *p)
 {
     /* allocate memory for the new entry and put lastName
      * into the right location */
@@ -27,16 +27,16 @@ void append(char lastName[], int str, entry *table)
         strcpy(table[key].lastName, lastName);
     else {
         entry *tmp = table[key].pNext;
-        table[key].pNext = (entry *) malloc(sizeof(entry));
+        table[key].pNext = (entry *) cmalloc(p, sizeof(entry));
         strcpy(table[key].pNext->lastName, lastName);
         table[key].pNext->pDetail = NULL;
         table[key].pNext->pNext = tmp;
     }
 }
 
-int init_hash(entry **table, int size)
+int init_hash(entry **table, int size, pool *p)
 {
-    if(NULL == (*table = (entry *) malloc(sizeof(entry) * size))) return -1;
+    if(NULL == (*table = (entry *) cmalloc(p, sizeof(entry) * size))) return -1;
 
     for(int i = 0; i < size; i++) {
         (*table)[i].lastName[0] = '\0';

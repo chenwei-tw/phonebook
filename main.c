@@ -13,6 +13,7 @@
 #endif
 
 #define DICT_FILE "./dictionary/words.txt"
+#define DICT_SIZE 349900
 
 static double diff_in_second(struct timespec t1, struct timespec t2)
 {
@@ -43,8 +44,11 @@ int main(int argc, char *argv[])
     }
 
 #if defined(OPT)
+    pool *memory_pool = NULL;
+    memory_pool = pool_init(sizeof(entry) * (DICT_SIZE + HASH_TABLE_SIZE));
     entry *e = NULL;
-    if (init_hash(&e, HASH_TABLE_SIZE) == -1) {
+
+    if (init_hash(&e, HASH_TABLE_SIZE, memory_pool) == -1) {
         printf("cannot malloc enough space for hash table\n");
         fclose(fp);
         return -1;
@@ -75,7 +79,7 @@ int main(int argc, char *argv[])
         line[i - 1] = '\0';
         i = 0;
         /* (int) '\n' = 10 */
-        append(line, hash_value - 10, e);
+        append(line, hash_value - 10, e, memory_pool);
     }
 #else
     while (fgets(line, sizeof(line), fp)) {
