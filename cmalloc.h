@@ -4,6 +4,7 @@
 typedef struct __POOL {
     char *next;
     char *end;
+    size_t size;
 } pool;
 
 pool *pool_init(size_t size);

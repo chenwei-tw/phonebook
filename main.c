@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 #if defined(__GNUC__) && !defined(OPT)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #elif defined(__GNUC__) && defined(OPT)
-    __builtin___clear_cache((char *) e, (char *) e + sizeof(entry *) * HASH_TABLE_SIZE);
+    __builtin___clear_cache((char *) memory_pool->end - memory_pool->size, (char *) memory_pool->end);
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 #if defined(__GNUC__) && !defined(OPT)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #elif defined(__GNUC__) && defined(OPT)
-    __builtin___clear_cache((char *) e, (char *) e + sizeof(entry *) * HASH_TABLE_SIZE);
+    __builtin___clear_cache((char *) memory_pool->end - memory_pool->size, (char *) memory_pool->end);
 #endif
 
     /* compute the execution time */

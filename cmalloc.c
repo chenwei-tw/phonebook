@@ -8,6 +8,7 @@ pool *pool_init(size_t size)
     pool *p = (pool *) malloc(size + sizeof(pool));
     p->next = (char *) &p[1];
     p->end = p->next + size;
+    p->size = size;
 
     return p;
 }
