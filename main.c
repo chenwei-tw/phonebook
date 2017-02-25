@@ -45,8 +45,8 @@ int main(int argc, char *argv[])
 
 #if defined(OPT)
     pool *memory_pool = NULL;
-    memory_pool = pool_init(sizeof(entry) * (DICT_SIZE + HASH_TABLE_SIZE));
-    entry *e = NULL;
+    memory_pool = pool_init(sizeof(hitem) * ((DICT_SIZE>>1) + (HASH_TABLE_SIZE<<1)));
+    hitem *e = NULL;
 
     if (init_hash(&e, HASH_TABLE_SIZE, memory_pool) == -1) {
         printf("cannot malloc enough space for hash table\n");

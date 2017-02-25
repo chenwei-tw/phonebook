@@ -4,45 +4,44 @@
 #include "phonebook_opt.h"
 
 /* FILL YOUR OWN IMPLEMENTATION HERE! */
-entry *findName(char lastName[], entry *table)
+entry *findName(char lastName[], hitem *table)
 {
     int key = hash_function(lastName);
-    entry *current = &table[key];
+    hitem *current = table[key].hNext;
 
     while (current != NULL) {
-        if (strcasecmp(lastName, current->lastName) == 0)
-            return current;
-        current = current->pNext;
+        if (strcasecmp(lastName, current->slot[0].lastName) == 0)
+            return &current->slot[0];
+        if (strcasecmp(lastName, current->slot[1].lastName) == 0)
+            return &current->slot[1];
+        current = current->hNext;
     }
     return NULL;
 }
 
-void append(char lastName[], int str, entry *table, pool *p)
+void append(char lastName[], int str, hitem *table, pool *p)
 {
-    /* allocate memory for the new entry and put lastName
-     * into the right location */
     int key = str % HASH_TABLE_SIZE;
 
-    if(table[key].lastName[0] == '\0')
-        strcpy(table[key].lastName, lastName);
-    else {
-        entry *tmp = table[key].pNext;
-        table[key].pNext = (entry *) cmalloc(p, sizeof(entry));
-        strcpy(table[key].pNext->lastName, lastName);
-        table[key].pNext->pDetail = NULL;
-        table[key].pNext->pNext = tmp;
+    if (table[key].hNext && table[key].hNext->slot[1].lastName[0] == '\0') {
+        strcpy(table[key].hNext->slot[1].lastName, lastName);
+    } else {
+        hitem *tmp = table[key].hNext;
+        table[key].hNext = (hitem *) cmalloc(p, sizeof(hitem));
+        strcpy(table[key].hNext->slot[0].lastName, lastName);
+        table[key].hNext->slot[0].pDetail = NULL;
+        table[key].hNext->slot[1].pDetail = NULL;
+        table[key].hNext->slot[1].lastName[0] = '\0';
+        table[key].hNext->hNext = tmp;
     }
 }
 
-int init_hash(entry **table, int size, pool *p)
+int init_hash(hitem **table, int size, pool *p)
 {
-    if(NULL == (*table = (entry *) cmalloc(p, sizeof(entry) * size))) return -1;
+    if (NULL == (*table = (hitem *) cmalloc(p, sizeof(hitem) * size))) return -1;
 
-    for(int i = 0; i < size; i++) {
-        (*table)[i].lastName[0] = '\0';
-        (*table)[i].pDetail = NULL;
-        (*table)[i].pNext = NULL;
-    }
+    for (int i = 0; i < size; i++)
+        (*table)[i].hNext = NULL;
 
     return 1;
 }
@@ -51,7 +50,7 @@ int hash_function(char *str)
 {
     int value = 0;
 
-    while(*str)
+    while (*str)
         value += *str++;
 
     return value %= HASH_TABLE_SIZE;

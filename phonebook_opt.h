@@ -23,12 +23,16 @@ typedef struct __PHONE_BOOK_ENTRY_DETAIL {
 typedef struct __PHONE_BOOK_ENTRY {
     char lastName[MAX_LAST_NAME_SIZE];
     struct __PHONE_BOOK_ENTRY_DETAIL *pDetail;
-    struct __PHONE_BOOK_ENTRY *pNext;
 } entry;
 
-int init_hash(entry **table, int size, pool *p);
+typedef struct __HASH_ITEM {
+    struct __PHONE_BOOK_ENTRY slot[2];
+    struct __HASH_ITEM *hNext;
+} hitem;
+
+int init_hash(hitem **table, int size, pool *p);
 int hash_function(char *str);
-entry *findName(char lastName[], entry *table);
-void append(char lastName[], int str, entry *table, pool *p);
+entry *findName(char lastName[], hitem *table);
+void append(char lastName[], int str, hitem *table, pool *p);
 
 #endif
