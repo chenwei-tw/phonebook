@@ -17,11 +17,11 @@ entry *findName(char lastName[], entry *table)
     return NULL;
 }
 
-void append(char lastName[], entry *table)
+void append(char lastName[], int str, entry *table)
 {
     /* allocate memory for the new entry and put lastName
      * into the right location */
-    int key = hash_function(lastName);
+    int key = str % HASH_TABLE_SIZE;
 
     if(table[key].lastName[0] == '\0')
         strcpy(table[key].lastName, lastName);
@@ -34,7 +34,7 @@ void append(char lastName[], entry *table)
     }
 }
 
-int init_hash(entry** table, int size)
+int init_hash(entry **table, int size)
 {
     if(NULL == (*table = (entry *) malloc(sizeof(entry) * size))) return -1;
 
@@ -47,14 +47,12 @@ int init_hash(entry** table, int size)
     return 1;
 }
 
-int hash_function(char* str)
+int hash_function(char *str)
 {
     int value = 0;
 
     while(*str)
         value += *str++;
 
-    value %= HASH_TABLE_SIZE;
-
-    return value;
+    return value %= HASH_TABLE_SIZE;
 }

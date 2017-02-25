@@ -27,6 +27,6 @@ typedef struct __PHONE_BOOK_ENTRY {
 int init_hash(entry **table, int size);
 int hash_function(char *str);
 entry *findName(char lastName[], entry *table);
-void append(char lastName[], entry *table);
+void append(char lastName[], int str, entry *table);
 
 #endif

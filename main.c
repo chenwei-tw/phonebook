@@ -67,11 +67,15 @@ int main(int argc, char *argv[])
 
 #if defined(OPT)
     while (fgets(line, sizeof(line), fp)) {
-        while (line[i] != '\0')
+        int hash_value = 0;
+        while (line[i] != '\0') {
+            hash_value += line[i];
             i++;
+        }
         line[i - 1] = '\0';
         i = 0;
-        append(line, e);
+        /* (int) '\n' = 10 */
+        append(line, hash_value - 10, e);
     }
 #else
     while (fgets(line, sizeof(line), fp)) {
